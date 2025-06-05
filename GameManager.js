@@ -54,7 +54,8 @@ export class GameManager {
   }
 
   spawnEgg(position) {
-    const egg = new Egg(this.scene, position);
+    const isGolden = Math.random() < 0.10;  // 10% 확률로 황금알
+    const egg = new Egg(this.scene, position, isGolden);
     this.eggs.push(egg);
   }
 

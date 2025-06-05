@@ -8,6 +8,7 @@ let scene, camera, renderer;
 let game, resourceManager, uiManager;
 let clock = new THREE.Clock();
 let hoveredChicken = null;
+let hoveredEgg = null;
 const PLANE_SIZE = 10;
 
 init();
@@ -63,17 +64,42 @@ function init() {
     mouse.y = -(event.clientY / innerHeight) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
-    const intersects = raycaster.intersectObjects(game.chickens.map(c => c.mesh));
+
+    const allMeshes = [
+      ...game.chickens.map(c => c.mesh),
+      ...game.eggs.map(e => e.mesh)
+    ];
+
+    const intersects = raycaster.intersectObjects(allMeshes);
+
+    hoveredChicken = null;
+    hoveredEgg = null;
 
     if (intersects.length > 0) {
-        const chicken = game.chickens.find(c => c.mesh === intersects[0].object);
+      const hit = intersects[0].object;
+      const chicken = game.chickens.find(c => c.mesh === hit);
+      if (chicken){
         hoveredChicken = chicken;
-    } else {
-        hoveredChicken = null;
+      }
+
+      const egg = game.eggs.find(e => e.mesh === hit);
+      if (egg){
+        hoveredEgg = egg;
+      }
     }
 });
 
   window.addEventListener('click', () => {
+    if (hoveredEgg && !hoveredEgg.isHarvested){
+      hoveredEgg.isHarvested = true;
+      hoveredEgg.dispose();
+
+      const reward = hoveredEgg.isGolden? 15 : 5;
+      resourceManager.money += reward;
+      
+      game.eggs = game.eggs.filter(e => e !== hoveredEgg);
+      return;
+    }
     if (hoveredChicken && resourceManager.spend(5)) {
       hoveredChicken.feed();
     }

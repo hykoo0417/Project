@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 
 export class Egg {
-  constructor(scene, position) {
+  constructor(scene, position, isGolden = false) {
     this.scene = scene;
     this.mesh = this._createMesh();
     this.mesh.position.copy(position);
@@ -11,17 +11,21 @@ export class Egg {
 
     this.hatchTime = Date.now() + this._randomHatchDelay();
     this.hatched = false;
+    this.isHarvested = false;
+    this.isGolden = isGolden;
   }
 
-  _createMesh() {
+  _createMesh(isGolden) {
     const geometry = new THREE.SphereGeometry(0.15, 12, 12);
-    const material = new THREE.MeshToonMaterial({ color: 0xffffff });
+    const material = new THREE.MeshToonMaterial({ 
+      color: isGolden ? 0xffd700 : 0xffffff 
+    });
     return new THREE.Mesh(geometry, material);
   }
 
-  // 랜덤하게 부화 시간을 결정 (5~10초)
+  // 랜덤하게 부화 시간을 결정
   _randomHatchDelay() {
-    return 5000 + Math.random() * 5000; // 5~10초 사이
+    return 15000 + Math.random() * 15000; // 15~30초
   }
 
   update() {

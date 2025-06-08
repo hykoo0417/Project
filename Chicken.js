@@ -14,7 +14,11 @@ export class Chicken {
     this.alive = true;
     this.moveSpeed = 0.5;       // units per second
     this.direction = getRandomDirection();
+    this.targetDirection = this.direction.clone();
+
     this.nextEggTime = Date.now() + this._randomEggDelay();
+    this.isMoving = true;
+    this.moveCooldown = 2 + Math.random() * 2;
   }
 
   _createMesh() {
@@ -36,6 +40,14 @@ export class Chicken {
       this.die();
       return;
     }
+    
+    // 행동 상태 갱신 (움직일지 말지 + 방향 전환)
+    this.moveCooldown -= deltaTime;
+    if (this.moveCooldown <= 0){
+      this.isMoving = Math.random() < 0.7;  // 70% 확률로 움직임
+      this.targetDirection = getRandomDirection();
+      this.moveCooldown = 2 + Math.random() * 3;
+    }
 
     // 이동
     this._move(deltaTime, planeSize, neighbors);
@@ -48,8 +60,14 @@ export class Chicken {
   }
 
   _move(deltaTime, planeSize, neighbors) {
+    // 방향을 서서히 보간
+    this.direction.lerp(this.targetDirection, 0.05);
+
+    if(!this.isMoving) return;
+
     const moveDelta = this.direction.clone().multiplyScalar(this.moveSpeed * deltaTime);
     
+    // 다른 객체랑 겹침 방지
     const separation = new THREE.Vector3();
     for (const other of neighbors){
       if (other === this || !other.alive) continue;
@@ -69,11 +87,6 @@ export class Chicken {
 
     // 경계 체크
     clampPositionInPlane(this.mesh.position, planeSize);
-
-    // 일정 확률로 방향 전환
-    if (Math.random() < 0.01) {
-      this.direction = getRandomDirection();
-    }
   }
 
   feed() {

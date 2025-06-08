@@ -5,7 +5,7 @@ import * as THREE from 'three';
 export class Egg {
   constructor(scene, position, isGolden = false) {
     this.scene = scene;
-    this.mesh = this._createMesh();
+    this.mesh = this._createMesh(isGolden);
     this.mesh.position.copy(position);
     this.scene.add(this.mesh);
 

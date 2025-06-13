@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GameManager } from './GameManager.js';
 import { ResourceManager } from './ResourceManager.js';
 import { UIManager } from './UIManager.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // 기본 변수
 let scene, camera, renderer;
@@ -9,6 +10,7 @@ let game, resourceManager, uiManager;
 let clock = new THREE.Clock();
 let hoveredChicken = null;
 let hoveredEgg = null;
+let controls;
 const PLANE_SIZE = 10;
 
 init();
@@ -41,6 +43,13 @@ function init() {
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
+
+  // Controls
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; // 부드러운 움직임을 위해
+  controls.dampingFactor = 0.05;
+  controls.target.set(0, 0, 0); // 카메라가 바라볼 중심점
+  controls.update();
 
   // 바닥 Plane
   const plane = new THREE.Mesh(
@@ -112,6 +121,7 @@ function animate() {
   requestAnimationFrame(animate);
   const deltaTime = clock.getDelta();
 
+  
   game.update(deltaTime);
   resourceManager.update(deltaTime);
   uiManager.update(resourceManager.getMoney(), resourceManager.getTime());
@@ -122,6 +132,7 @@ function animate() {
     console.log('💀 Game Over!');
   }
 
+  controls.update(); // OrbitControls 업데이트
   renderer.render(scene, camera);
 }
 

@@ -7,6 +7,8 @@ export class Egg {
     this.scene = scene;
     this.mesh = this._createMesh(isGolden);
     this.mesh.position.copy(position);
+    this.mesh.position.y += 0.15;
+    this.mesh.castShadow = true;
     this.scene.add(this.mesh);
 
     this.hatchTime = Date.now() + this._randomHatchDelay();
@@ -16,11 +18,13 @@ export class Egg {
   }
 
   _createMesh(isGolden) {
-    const geometry = new THREE.SphereGeometry(0.15, 12, 12);
+    const geometry = new THREE.SphereGeometry(0.12, 12, 12);
     const material = new THREE.MeshToonMaterial({ 
       color: isGolden ? 0xffd700 : 0xffffff 
     });
-    return new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.scale.set(1, 1.3, 1);
+    return mesh;
   }
 
   // 랜덤하게 부화 시간을 결정

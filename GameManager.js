@@ -41,6 +41,7 @@ export class GameManager {
       // 부화했을 시 닭 객체로 변경
       if (result === 'hatch') {
         const newPos = egg.mesh.position.clone();
+        newPos.y = 0.15;
         this.spawnChicken(newPos);
         egg.dispose();
         this.eggs.splice(i, 1);

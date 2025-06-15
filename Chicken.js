@@ -51,8 +51,12 @@ export class Chicken {
 
     this.mesh = ChickenModel.clone();
     this.mesh.traverse((child) => {
-    if (child.isLight) {
+      if (child.isLight) {
         this.mesh.remove(child);
+      }
+      if (child.isMesh) {
+        child.castShadow = true;      // 그림자 내도록 설정
+        child.receiveShadow = true;   // 혹시 그림자 받을 부분이 있으면
       }
     });
 
@@ -131,6 +135,12 @@ export class Chicken {
 
     // 경계 체크
     clampPositionInPlane(this.mesh.position, planeSize);
+
+    // 이동 방향을 바라봄
+    if (this.isMoving && this.direction.lengthSq() > 0.0001) {
+      const angle = Math.atan2(this.direction.x, this.direction.z);
+      this.mesh.rotation.y = angle + Math.PI / 2;
+    }
   }
 
   feed() {

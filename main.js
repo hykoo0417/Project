@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { GameManager } from './GameManager.js';
 import { ResourceManager } from './ResourceManager.js';
 import { UIManager } from './UIManager.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { initCamera, initRenderer } from './util/util.js';
 
 // 기본 변수
 let scene, camera, renderer;
@@ -9,6 +11,7 @@ let game, resourceManager, uiManager;
 let clock = new THREE.Clock();
 let hoveredChicken = null;
 let hoveredEgg = null;
+let controls;
 const PLANE_SIZE = 10;
 
 init();
@@ -20,27 +23,30 @@ function init() {
   scene.background = new THREE.Color(0xaee8ff);
 
   // Camera
-  camera = new THREE.PerspectiveCamera(
-    60, 
-    window.innerWidth / window.innerHeight, 
-    0.1, 
-    100
-  );
-  camera.position.set(0, 10, 10);
-  camera.lookAt(0, 0, 0);
+  camera = initCamera();
 
   // Light
-  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
   scene.add(ambientLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.4);
   dirLight.position.set(5, 10, 7);
+  dirLight.castShadow = true;
   scene.add(dirLight);
 
+  const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 1.5);
+  hemiLight.position.set(0, 20, 0);
+  scene.add(hemiLight);
+
   // Renderer
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
+  renderer = initRenderer();
+
+  // Controls
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true; // 부드러운 움직임을 위해
+  controls.dampingFactor = 0.05;
+  controls.target.set(0, 0, 0); // 카메라가 바라볼 중심점
+  controls.update();
 
   // 바닥 Plane
   const plane = new THREE.Mesh(
@@ -48,9 +54,10 @@ function init() {
     new THREE.MeshToonMaterial({ color: 0x88cc88 })
   );
   plane.rotation.x = -Math.PI / 2;
+  plane.position.y += 0.15;
+  plane.receiveShadow = true;
   scene.add(plane);
 
-  // Game Manager
   game = new GameManager(scene, PLANE_SIZE);
   resourceManager = new ResourceManager();
   uiManager = new UIManager();
@@ -87,7 +94,7 @@ function init() {
         hoveredEgg = egg;
       }
     }
-});
+  });
 
   window.addEventListener('click', () => {
     if (hoveredEgg && !hoveredEgg.isHarvested){
@@ -122,13 +129,12 @@ function animate() {
     console.log('💀 Game Over!');
   }
 
+  controls.update(); // OrbitControls 업데이트
   renderer.render(scene, camera);
 }
 
 function updateHoverUI() {
     if (hoveredChicken) {
-        //console.log('[DEBUG] hoveredChicken 감지됨:', hoveredChicken.hunger);
-
         const pos = new THREE.Vector3();
         hoveredChicken.hitbox.getWorldPosition(pos);
         const screenPos = pos.project(camera);  // -1 ~ 1
@@ -138,7 +144,6 @@ function updateHoverUI() {
 
         uiManager.updateHoverHunger3D(hoveredChicken.hunger, x, y);
     } else {
-        //console.log('[DEBUG] hoveredChicken 없음');
         uiManager.updateHoverHunger3D(null);
     }
 }

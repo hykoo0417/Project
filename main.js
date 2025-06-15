@@ -30,7 +30,7 @@ function init() {
   camera.lookAt(0, 0, 0);
 
   // Light
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+  const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
   scene.add(ambientLight);
 
   const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
@@ -66,7 +66,7 @@ function init() {
     raycaster.setFromCamera(mouse, camera);
 
     const allMeshes = [
-      ...game.chickens.map(c => c.mesh),
+      ...game.chickens.map(c => c.hitbox),
       ...game.eggs.map(e => e.mesh)
     ];
 
@@ -77,7 +77,7 @@ function init() {
 
     if (intersects.length > 0) {
       const hit = intersects[0].object;
-      const chicken = game.chickens.find(c => c.mesh === hit);
+      const chicken = game.chickens.find(c => c.hitbox === hit);
       if (chicken){
         hoveredChicken = chicken;
       }
@@ -127,8 +127,10 @@ function animate() {
 
 function updateHoverUI() {
     if (hoveredChicken) {
-        // 3D position → 2D screen 좌표 변환
-        const pos = hoveredChicken.mesh.position.clone();
+        //console.log('[DEBUG] hoveredChicken 감지됨:', hoveredChicken.hunger);
+
+        const pos = new THREE.Vector3();
+        hoveredChicken.hitbox.getWorldPosition(pos);
         const screenPos = pos.project(camera);  // -1 ~ 1
 
         const x = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
@@ -136,6 +138,7 @@ function updateHoverUI() {
 
         uiManager.updateHoverHunger3D(hoveredChicken.hunger, x, y);
     } else {
+        //console.log('[DEBUG] hoveredChicken 없음');
         uiManager.updateHoverHunger3D(null);
     }
 }

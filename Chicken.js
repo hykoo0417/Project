@@ -1,14 +1,16 @@
 // Chicken object의 행동과 status를 관리하는 class
 
 import * as THREE from 'three';
+import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 import { getRandomDirection, clampPositionInPlane } from './util/math.js';
+
+let ChickenModel = null;
+let loadingPromise = null;
 
 export class Chicken {
   constructor(scene, startPosition) {
     this.scene = scene;
-    this.mesh = this._createMesh(); // 나중에 모델로 대체 가능
-    this.mesh.position.copy(startPosition);
-    this.scene.add(this.mesh);
+    this.mesh = null; // 모델 로딩될때 할당됨
 
     this.hunger = 100;          // 0~100
     this.alive = true;
@@ -19,12 +21,54 @@ export class Chicken {
     this.nextEggTime = Date.now() + this._randomEggDelay();
     this.isMoving = true;
     this.moveCooldown = 2 + Math.random() * 2;
+    this.isLoaded = false;  // 초기엔 아직 mesh 없음
+    
+    this._loadModel(startPosition);
   }
 
+  /*
   _createMesh() {
     const geometry = new THREE.SphereGeometry(0.3, 16, 16);
     const material = new THREE.MeshToonMaterial({ color: 0xffcc00 });
     return new THREE.Mesh(geometry, material);
+  }
+  */
+
+  async _loadModel(startPosition) {
+    if (!ChickenModel) {
+      if (!loadingPromise) {
+        const loader = new FBXLoader();
+        loadingPromise = new Promise((resolve, reject) => {
+          loader.load('./models/chicken.fbx', (fbx) => {
+            fbx.scale.set(0.02, 0.02, 0.02);
+            ChickenModel = fbx;
+            resolve(fbx);
+          }, undefined, reject);
+        });
+      }
+      await loadingPromise;
+    }
+
+    this.mesh = ChickenModel.clone();
+    this.mesh.traverse((child) => {
+    if (child.isLight) {
+        this.mesh.remove(child);
+      }
+    });
+
+    this.mesh.position.copy(startPosition);
+
+    const hitbox = new THREE.Mesh(
+      new THREE.SphereGeometry(13), // 닭 주변을 감쌀 정도의 크기
+      new THREE.MeshBasicMaterial({ visible: false }) // 감지용이므로 보이진 않음
+    );
+    hitbox.name = 'hitbox'; // 구분용 이름
+    hitbox.position.set(0, 20.0, 0);
+    this.mesh.add(hitbox); // FBX 모델의 자식으로 붙임
+    this.hitbox = hitbox; // 추후 감지에 사용
+
+    this.scene.add(this.mesh);
+    this.isLoaded = true;  // 이제 mesh와 hitbox 할당 완료
   }
 
   _randomEggDelay() {
@@ -32,7 +76,7 @@ export class Chicken {
   }
 
   update(deltaTime, planeSize, neighbors) {
-    if (!this.alive) return;
+    if (!this.alive || !this.isLoaded) return;
 
     // 배고픔 감소
     this.hunger -= deltaTime * 5;

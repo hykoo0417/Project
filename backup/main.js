@@ -5,6 +5,7 @@ import { UIManager } from './UIManager.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { initCamera, initRenderer } from './util/util.js';
 
+// 기본 변수
 let scene, camera, renderer;
 let game, resourceManager, uiManager;
 let clock = new THREE.Clock();
@@ -13,17 +14,19 @@ let hoveredEgg = null;
 let controls;
 let gameOver = false;
 const PLANE_SIZE = 10;
-const TOTAL_TIME = 300; // 5분
 
 init();
 animate();
-updateTimer();
 
 function init() {
+  // Scene
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xaee8ff);
+
+  // Camera
   camera = initCamera();
 
+  // Light
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
   scene.add(ambientLight);
 
@@ -36,22 +39,17 @@ function init() {
   hemiLight.position.set(0, 20, 0);
   scene.add(hemiLight);
 
+  // Renderer
   renderer = initRenderer();
 
+  // Controls
   controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
+  controls.enableDamping = true; // 부드러운 움직임을 위해
   controls.dampingFactor = 0.05;
-  controls.rotateSpeed = 0.3;
-  controls.target.set(0, 0, 0);
+  controls.target.set(0, 0, 0); // 카메라가 바라볼 중심점
   controls.update();
 
-  // ✅ 카메라 제한 설정
-  controls.minDistance = 5;
-  controls.maxDistance = 20;
-  controls.minPolarAngle = 0.4;               // 너무 위에서 보는 시점 방지 (~23도)
-  controls.maxPolarAngle = Math.PI / 2.3;     // 평면과 평행한 시점 방지 (~78도)
-  controls.enablePan = false;
-
+  // 바닥 Plane
   const textureLoader = new THREE.TextureLoader();
   const grassTexture = textureLoader.load('assets/grass.jpg');
   grassTexture.wrapS = THREE.RepeatWrapping;
@@ -114,9 +112,9 @@ function init() {
       hoveredEgg.isHarvested = true;
       hoveredEgg.dispose();
 
-      const reward = hoveredEgg.isGolden ? 15 : 5;
+      const reward = hoveredEgg.isGolden? 15 : 5;
       resourceManager.money += reward;
-
+      
       game.eggs = game.eggs.filter(e => e !== hoveredEgg);
       return;
     }
@@ -137,54 +135,50 @@ function animate() {
   resourceManager.update(deltaTime);
   const timeLeft = resourceManager.getTime();
   game.update(deltaTime, timeLeft);
-  uiManager.update(resourceManager.getMoney(), timeLeft);
-  updateHoverUI();
+  uiManager.update(resourceManager.getMoney(), resourceManager.getTime());
 
-  if (timeLeft <= 0) {
+  updateHoverUI();
+  
+  /*
+  if (game.isGameOver()) {
+    handleGameOver();
+    gameOver = true;
+    return;
+  }
+    */
+
+  if (resourceManager.getTime() <= 0) {
     handleGameOver();
     gameOver = true;
     return;
   }
 
-  controls.update();
+  controls.update(); // OrbitControls 업데이트
   renderer.render(scene, camera);
 }
 
 function updateHoverUI() {
-  if (hoveredChicken) {
-    const pos = new THREE.Vector3();
-    hoveredChicken.hitbox.getWorldPosition(pos);
-    const screenPos = pos.project(camera);
+    if (hoveredChicken) {
+        const pos = new THREE.Vector3();
+        hoveredChicken.hitbox.getWorldPosition(pos);
+        const screenPos = pos.project(camera);  // -1 ~ 1
 
-    const x = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
-    const y = (-screenPos.y * 0.5 + 0.5) * window.innerHeight;
+        const x = (screenPos.x * 0.5 + 0.5) * window.innerWidth;
+        const y = (-screenPos.y * 0.5 + 0.5) * window.innerHeight;
 
-    uiManager.updateHoverHunger3D(hoveredChicken.hunger, x, y);
-  } else {
-    uiManager.updateHoverHunger3D(null);
-  }
+        uiManager.updateHoverHunger3D(hoveredChicken.hunger, x, y);
+    } else {
+        uiManager.updateHoverHunger3D(null);
+    }
 }
 
 function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
 function handleGameOver() {
   console.log('💀 Game Over!');
   uiManager.showGameOver(game.chickens.length);
-}
-
-function updateTimer() {
-  const remaining = resourceManager.getTime();
-  const ratio = remaining / TOTAL_TIME;
-  uiManager.updateTimeBar(ratio);
-
-  if (remaining <= 0) {
-    handleGameOver();
-    gameOver = true;
-  } else {
-    requestAnimationFrame(updateTimer);
-  }
 }

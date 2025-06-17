@@ -13,6 +13,7 @@ let hoveredChicken = null;
 let hoveredEgg = null;
 let controls;
 let gameOver = false;
+let warnedTimes = new Set(); 
 
 const PLANE_SIZE = 10;
 const TOTAL_TIME = 300;
@@ -112,6 +113,8 @@ function init() {
       hoveredChicken = game.chickens.find(c => c.hitbox === hit) || null;
       hoveredEgg = game.eggs.find(e => e.mesh === hit) || null;
     }
+
+    updateHoverUI();
   });
 
   window.addEventListener('click', () => {
@@ -149,6 +152,17 @@ function animate() {
 
   uiManager.updateMoney(resourceManager.getMoney());
 
+    //  경고 팝업 표시 로직
+  const warningTriggers = [210, 110];
+  for (let t of warningTriggers) {
+    if (timeLeft === t && !warnedTimes.has(t)) {
+      warnedTimes.add(t);
+      uiManager.showWarningPopup('⚠️ 경고! 이벤트가 곧 시작됩니다!');
+    }
+  }
+
+
+
   if (timeLeft <= 0) {
     handleGameOver();
     gameOver = true;
@@ -178,5 +192,7 @@ function handleGameOver() {
   console.log('💀 Game Over!');
   uiManager.showGameOver(game.chickens.length);
 }
+
+
 
 

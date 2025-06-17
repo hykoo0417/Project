@@ -13,6 +13,7 @@ export class GameManager {
     this.eggs = [];
 
     this.timeLeft = 120;
+    this.diseaseTimer = 0;
 
     // 첫 닭 하나 생성
     this.spawnChicken(new THREE.Vector3(0, 0.15, 0));
@@ -24,7 +25,7 @@ export class GameManager {
     // 닭 업데이트
     for (let i = this.chickens.length - 1; i >= 0; i--) {
       const chicken = this.chickens[i];
-      const result = chicken.update(deltaTime, this.planeSize, this.chickens);  // edited
+      const result = chicken.update(deltaTime, this.planeSize, this.chickens);
 
       if (!chicken.alive) {
         this.chickens.splice(i, 1);
@@ -49,6 +50,16 @@ export class GameManager {
         this.spawnChicken(newPos);
         egg.dispose();
         this.eggs.splice(i, 1);
+      }
+    }
+
+    this.diseaseTimer += deltaTime;
+    if(this.diseaseTimer > 20){
+      this.diseaseTimer = 0;
+      const healthyChickens = this.chickens.filter(c => !c.isSick);
+      if (healthyChickens.length > 0){
+        const randomChicken = healthyChickens[Math.floor(Math.random() * healthyChickens.length)];
+        randomChicken.infect();
       }
     }
   }

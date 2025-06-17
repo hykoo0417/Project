@@ -19,7 +19,7 @@ export class UIManager {
         });
         document.body.appendChild(this.moneyText);
 
-        // ⏱ 타임바 컨테이너 (상단 중앙)
+        // ⏱ 타임바 컨테이너
         this.timeBarContainer = document.createElement('div');
         Object.assign(this.timeBarContainer.style, {
             position: 'fixed',
@@ -57,11 +57,24 @@ export class UIManager {
             zIndex: '1001',
         });
         this.timeBarContainer.appendChild(this.timeBar);
+
+        // 🐔 배고픔 UI
+        this.hungerTooltip = document.createElement('div');
+        Object.assign(this.hungerTooltip.style, {
+            position: 'fixed',
+            padding: '4px 8px',
+            background: 'rgba(0,0,0,0.7)',
+            color: '#fff',
+            fontSize: '13px',
+            fontFamily: '"NeoDunggeunmo", sans-serif',
+            borderRadius: '6px',
+            pointerEvents: 'none',
+            zIndex: '1003',
+            display: 'none',
+        });
+        document.body.appendChild(this.hungerTooltip);
     }
 
-    /**
-     * 경고/이벤트 오버레이 생성
-     */
     _createEventOverlay(startSec, durationSec, color, border) {
         const totalTime = 300;
         const overlay = document.createElement('div');
@@ -78,32 +91,50 @@ export class UIManager {
         this.timeBarContainer.appendChild(overlay);
     }
 
-    /**
-     * 남은 시간에 따라 타임바 갱신
-     */
     updateTimeBar(timeLeft) {
         const totalTime = 300;
         const progress = ((totalTime - timeLeft) / totalTime) * 100;
         this.timeBar.style.width = `${progress}%`;
     }
 
-    /**
-     * 돈 UI 갱신
-     */
     updateMoney(money) {
         this.moneyText.textContent = `💰 ${money}`;
     }
 
-    /**
-     * 닭 위에 배고픔 바 갱신 (옵션)
-     */
     updateHoverHunger3D(hunger, x, y) {
-        // 이 함수는 존재한다고 가정. 구현체는 프로젝트 요구에 따라 다름
+    if (!this.hungerTooltip) {
+        this.hungerTooltip = document.createElement('div');
+        Object.assign(this.hungerTooltip.style, {
+            position: 'fixed',
+            padding: '6px 10px',
+            background: 'rgba(0,0,0,0.75)',
+            color: '#fff',
+            fontSize: '13px',
+            fontFamily: '"NeoDunggeunmo", sans-serif',
+            borderRadius: '6px',
+            pointerEvents: 'none',
+            zIndex: '1003',
+            whiteSpace: 'nowrap',
+            display: 'none',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
+            border: '1px solid #aaa',
+        });
+        document.body.appendChild(this.hungerTooltip);
     }
 
-    /**
-     * 게임 오버 UI 표시 (옵션)
-     */
+    if (hunger === null) {
+        this.hungerTooltip.style.display = 'none';
+    } else {
+        const intHunger = Math.floor(hunger); // 정수화
+        this.hungerTooltip.textContent = `🍗 배고픔: ${intHunger}`;
+        this.hungerTooltip.style.left = `${x}px`;
+        this.hungerTooltip.style.top = `${y - 30}px`; // 닭 위 약간 띄움
+        this.hungerTooltip.style.display = 'block';
+    }
+}
+
+
+
     showGameOver(chickenCount) {
         const gameOverText = document.createElement('div');
         gameOverText.textContent = `💀 게임 종료! 닭 ${chickenCount}마리 보유`;

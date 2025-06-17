@@ -133,8 +133,6 @@ export class UIManager {
     }
 }
 
-
-
     showGameOver(chickenCount) {
         const gameOverText = document.createElement('div');
         gameOverText.textContent = `💀 게임 종료! 닭 ${chickenCount}마리 보유`;
@@ -154,4 +152,43 @@ export class UIManager {
         });
         document.body.appendChild(gameOverText);
     }
+    showWarningPopup(message) {
+    const popup = document.createElement('div');
+    popup.textContent = message;
+    Object.assign(popup.style, {
+        position: 'fixed',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        padding: '20px 30px',
+        background: 'rgba(255, 255, 0, 0.9)',
+        color: '#000',
+        fontSize: '24px',
+        fontWeight: 'bold',
+        fontFamily: '"NeoDunggeunmo", sans-serif',
+        borderRadius: '12px',
+        border: '2px solid #aaa',
+        zIndex: '2000',
+        opacity: '1',
+        transition: 'opacity 0.3s ease-in-out',
+        boxShadow: '0 0 12px rgba(255, 255, 0, 0.7)',
+        pointerEvents: 'none',
+    });
+
+    document.body.appendChild(popup);
+
+    let blinkCount = 0;
+    const maxBlinks = 5;
+
+    const blinkInterval = setInterval(() => {
+        popup.style.opacity = popup.style.opacity === '1' ? '0' : '1';
+        blinkCount++;
+        if (blinkCount >= maxBlinks * 2) { // on/off 총 6번 (3초)
+            clearInterval(blinkInterval);
+            document.body.removeChild(popup);
+        }
+    }, 500); // 0.5초마다 토글 → 1초 주기로 깜빡임
+}
+
+
 }

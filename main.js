@@ -86,20 +86,6 @@ function init() {
   ground.receiveShadow = true;
   scene.add(ground);
 
-  // Add Grass Overlay Plane
-  const grassOverlay = new THREE.Mesh(
-    new THREE.PlaneGeometry(WIDTH, DEPTH),
-    new THREE.MeshStandardMaterial({
-      map: grassTexture,
-      transparent: true,
-      opacity: 0.97,
-      roughness: 1.0
-    })
-  );
-  grassOverlay.rotation.x = -Math.PI / 2;
-  grassOverlay.position.y = 0.201;
-  scene.add(grassOverlay);
-
   game = new GameManager(scene, PLANE_SIZE);
   resourceManager = new ResourceManager();
   uiManager = new UIManager();

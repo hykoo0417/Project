@@ -5,6 +5,7 @@ export class UIManager {
         this.moneyEl = document.createElement('div');
         this.timerEl = document.createElement('div');
         this.hoverEl = document.createElement('div');
+        this.gameOverEl = document.createElement('div');
 
         Object.assign(this.moneyEl.style, this._baseStyle(), { top: '10px', left: '10px' });
         Object.assign(this.timerEl.style, this._baseStyle(), { top: '40px', left: '10px' });
@@ -15,9 +16,24 @@ export class UIManager {
         });
         this.hoverEl.style.display = 'none';
 
+        Object.assign(this.gameOverEl.style, {
+            position: 'absolute',
+            top: '40%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'rgba(0, 0, 0, 0.8)',
+            color: 'white',
+            padding: '20px',
+            fontSize: '24px',
+            borderRadius: '10px',
+            display: 'none',
+            zIndex: 999
+        });
+
         document.body.appendChild(this.moneyEl);
         document.body.appendChild(this.timerEl);
         document.body.appendChild(this.hoverEl);
+        document.body.appendChild(this.gameOverEl);
     }
 
     _baseStyle() {
@@ -33,8 +49,8 @@ export class UIManager {
     }
 
     update(money, time) {
-        this.moneyEl.innerText = `💰 Money: ${money}`;
-        this.timerEl.innerText = `⏱ Time: ${time}s`;
+        this.moneyEl.innerText = `💰 ${money}`;
+        this.timerEl.innerText = `⏱ ${time}s`;
     }
     
     updateHoverHunger3D(hunger, screenX, screenY) {
@@ -46,6 +62,11 @@ export class UIManager {
         } else {
             this.hoverEl.style.display = 'none';
         }
+    }
+
+    showGameOver(chickenCount){
+        this.gameOverEl.innerText = `Game Over!\n${chickenCount} Chickens survived`;
+        this.gameOverEl.style.display = 'block';
     }
 
 }

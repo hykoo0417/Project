@@ -26,20 +26,12 @@ export class Chicken {
     this._loadModel(startPosition);
   }
 
-  /*
-  _createMesh() {
-    const geometry = new THREE.SphereGeometry(0.3, 16, 16);
-    const material = new THREE.MeshToonMaterial({ color: 0xffcc00 });
-    return new THREE.Mesh(geometry, material);
-  }
-  */
-
   async _loadModel(startPosition) {
     if (!ChickenModel) {
       if (!loadingPromise) {
         const loader = new FBXLoader();
         loadingPromise = new Promise((resolve, reject) => {
-          loader.load('./models/chicken.fbx', (fbx) => {
+          loader.load('./assets/chicken.fbx', (fbx) => {
             fbx.scale.set(0.02, 0.02, 0.02);
             ChickenModel = fbx;
             resolve(fbx);

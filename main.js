@@ -12,6 +12,7 @@ let clock = new THREE.Clock();
 let hoveredChicken = null;
 let hoveredEgg = null;
 let controls;
+let gameOver = false;
 const PLANE_SIZE = 10;
 
 init();
@@ -49,9 +50,19 @@ function init() {
   controls.update();
 
   // 바닥 Plane
+  const textureLoader = new THREE.TextureLoader();
+  const grassTexture = textureLoader.load('assets/grass.jpg');
+  grassTexture.wrapS = THREE.RepeatWrapping;
+  grassTexture.wrapT = THREE.RepeatWrapping;
+  grassTexture.repeat.set(4, 4);
+
+  const planeMaterial = new THREE.MeshStandardMaterial({
+    map: grassTexture,
+    color: 0xcccccc
+  });
   const plane = new THREE.Mesh(
     new THREE.PlaneGeometry(PLANE_SIZE, PLANE_SIZE),
-    new THREE.MeshToonMaterial({ color: 0x88cc88 })
+    planeMaterial
   );
   plane.rotation.x = -Math.PI / 2;
   plane.position.y += 0.15;
@@ -116,17 +127,30 @@ function init() {
 }
 
 function animate() {
+  if (gameOver) return;
+
   requestAnimationFrame(animate);
   const deltaTime = clock.getDelta();
 
-  game.update(deltaTime);
   resourceManager.update(deltaTime);
+  const timeLeft = resourceManager.getTime();
+  game.update(deltaTime, timeLeft);
   uiManager.update(resourceManager.getMoney(), resourceManager.getTime());
 
   updateHoverUI();
   
+  /*
   if (game.isGameOver()) {
-    console.log('💀 Game Over!');
+    handleGameOver();
+    gameOver = true;
+    return;
+  }
+    */
+
+  if (resourceManager.getTime() <= 0) {
+    handleGameOver();
+    gameOver = true;
+    return;
   }
 
   controls.update(); // OrbitControls 업데이트
@@ -152,4 +176,9 @@ function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function handleGameOver() {
+  console.log('💀 Game Over!');
+  uiManager.showGameOver(game.chickens.length);
 }

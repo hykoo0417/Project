@@ -12,11 +12,15 @@ export class GameManager {
     this.chickens = [];
     this.eggs = [];
 
+    this.timeLeft = 120;
+
     // 첫 닭 하나 생성
     this.spawnChicken(new THREE.Vector3(0, 0.15, 0));
   }
 
-  update(deltaTime) {
+  update(deltaTime, timeLeft) {
+    this.timeLeft = timeLeft;
+
     // 닭 업데이트
     for (let i = this.chickens.length - 1; i >= 0; i--) {
       const chicken = this.chickens[i];
@@ -61,6 +65,6 @@ export class GameManager {
   }
 
   isGameOver() {
-    return this.chickens.length === 0;
+    return this.timeLeft <= 0;
   }
 }

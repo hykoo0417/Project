@@ -19,7 +19,6 @@ const TOTAL_TIME = 300;
 
 init();
 animate();
-updateTimer();
 
 function init() {
   scene = new THREE.Scene();
@@ -90,6 +89,8 @@ function init() {
   resourceManager = new ResourceManager();
   uiManager = new UIManager();
 
+  uiManager.updateMoney(resourceManager.getMoney()); // 💰 게임 시작 시 초기 돈 표시
+
   const raycaster = new THREE.Raycaster();
   const mouse = new THREE.Vector2();
 
@@ -119,6 +120,7 @@ function init() {
       hoveredEgg.dispose();
       const reward = hoveredEgg.isGolden ? 15 : 5;
       resourceManager.money += reward;
+      uiManager.updateMoney(resourceManager.getMoney());
       game.eggs = game.eggs.filter(e => e !== hoveredEgg);
     }
 
@@ -143,9 +145,9 @@ function animate() {
 
   const timeLeft = resourceManager.getTime();
   game.update(deltaTime, timeLeft);
-  uiManager.update(resourceManager.getMoney(), timeLeft);
+  uiManager.updateTimeBar(timeLeft); // ⏱ 타임바 업데이트
 
-  updateHoverUI();
+  uiManager.updateMoney(resourceManager.getMoney());
 
   if (timeLeft <= 0) {
     handleGameOver();
@@ -177,15 +179,4 @@ function handleGameOver() {
   uiManager.showGameOver(game.chickens.length);
 }
 
-function updateTimer() {
-  const remaining = resourceManager.getTime();
-  const ratio = remaining / TOTAL_TIME;
-  uiManager.updateTimeBar(ratio);
 
-  if (remaining <= 0) {
-    handleGameOver();
-    gameOver = true;
-  } else {
-    requestAnimationFrame(updateTimer);
-  }
-}

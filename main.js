@@ -82,7 +82,7 @@ function init() {
 
   const geometry = new RoundedBoxGeometry(WIDTH, HEIGHT, DEPTH, 4, 0.2);
   const ground = new THREE.Mesh(geometry, materials);
-  ground.position.y = -HEIGHT / 2 + 0.2;
+  ground.position.y = -HEIGHT / 2 + 0.1;
   ground.receiveShadow = true;
   scene.add(ground);
 

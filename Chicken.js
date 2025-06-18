@@ -25,6 +25,7 @@ export class Chicken {
     this.sicknessTimer = 0;
     this.isCritical = false;
     this.grayFactor = 0.0;
+    this.dead = 1;
     
     this._loadModel(startPosition);
   }
@@ -183,6 +184,15 @@ export class Chicken {
   die() {
 
     if (!this.alive || !this.mesh) return;
+
+    if (this.dead){
+      const audio = new Audio('./assets/dying.mp3');
+      audio.play().catch(err => {
+        console.warn("소리 재생 실패:", err);
+      });
+      this.dead = 0;
+    }
+    
 
     const duration = 1.0; // 1초
     const startTime = performance.now();

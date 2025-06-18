@@ -14,6 +14,7 @@ export class GameManager {
 
     this.timeLeft = 120;
     this.diseaseTimer = 0;
+    this.diseaseEnabled = false;
 
     // 첫 닭 하나 생성
     this.spawnChicken(new THREE.Vector3(0, 0.15, 0));
@@ -53,14 +54,23 @@ export class GameManager {
       }
     }
 
-    this.diseaseTimer += deltaTime;
-    if(this.diseaseTimer > 10){
+    if(!this.diseaseEnabled && this.timeLeft < 110){
+      this.diseaseEnabled = true;
       this.diseaseTimer = 0;
-      const healthyChickens = this.chickens.filter(c => !c.isSick);
-      if (healthyChickens.length > 0){
-        for (const chicken of healthyChickens){
-          if(Math.random() < 0.10){
-            chicken.infect();
+    }
+
+    if(this.diseaseEnabled){
+      this.diseaseTimer += deltaTime;
+
+      if(this.diseaseTimer > 10){
+        this.diseaseTimer = 0;
+        const healthyChickens = this.chickens.filter(c => !c.isSick);
+
+        if (healthyChickens.length > 0){
+          for (const chicken of healthyChickens){
+            if(Math.random() < 0.10){
+              chicken.infect();
+            }
           }
         }
       }

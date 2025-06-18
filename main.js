@@ -51,7 +51,7 @@ function init() {
   controls.minDistance = 5;
   controls.maxDistance = 20;
   controls.minPolarAngle = 0.4;
-  controls.maxPolarAngle = Math.PI / 3;
+  controls.maxPolarAngle = Math.PI / 2.5;
   controls.enablePan = false;
   controls.update();
 

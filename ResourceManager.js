@@ -3,7 +3,7 @@
 export class ResourceManager {
   constructor() {
     this.money = 0;
-    this.timer = 300;
+    this.timer = 150;
     this.moneyRate = 1;       // 초당 1원 증가
   }
 

@@ -54,12 +54,15 @@ export class GameManager {
     }
 
     this.diseaseTimer += deltaTime;
-    if(this.diseaseTimer > 20){
+    if(this.diseaseTimer > 10){
       this.diseaseTimer = 0;
       const healthyChickens = this.chickens.filter(c => !c.isSick);
       if (healthyChickens.length > 0){
-        const randomChicken = healthyChickens[Math.floor(Math.random() * healthyChickens.length)];
-        randomChicken.infect();
+        for (const chicken of healthyChickens){
+          if(Math.random() < 0.10){
+            chicken.infect();
+          }
+        }
       }
     }
   }

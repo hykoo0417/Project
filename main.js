@@ -16,7 +16,7 @@ let gameOver = false;
 let warnedTimes = new Set(); 
 
 const PLANE_SIZE = 10;
-const TOTAL_TIME = 300;
+const TOTAL_TIME = 150;
 
 init();
 animate();

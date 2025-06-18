@@ -23,6 +23,7 @@ export class Chicken {
     this.isLoaded = false;  // 초기엔 아직 mesh 없음
     this.isSick = false;
     this.sicknessTimer = 0;
+    this.isCritical = false;
     
     this._loadModel(startPosition);
   }
@@ -90,9 +91,18 @@ export class Chicken {
         this.die();
       }
 
+      if(this.sicknessTimer > 10 && !this.isCritical){
+        this.isCritical = true;
+        this.mesh.traverse((child) => {
+          if (child.isMesh){
+            child.material[0].color.set(0x0033cc);
+          }
+        });
+      }
+
       for (const other of neighbors){
-        if (other != this && !other.isSick && this.mesh.position.distanceTo(other.mesh.position) < 2){
-          if (Math.random() < 0.0001){
+        if (other != this && !other.isSick && this.mesh.position.distanceTo(other.mesh.position) < 1.0){
+          if (Math.random() < 0.0005){
             other.infect(); // 근처 닭에게 전염가능
           }
         }

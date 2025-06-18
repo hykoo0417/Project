@@ -38,10 +38,10 @@ export class UIManager {
         document.body.appendChild(this.timeBarContainer);
 
         // 🎯 이벤트 및 경고 오버레이
-        this._createEventOverlay(100, 30, 'rgba(255, 50, 50, 0.3)', '1px solid #aa0000');   // 이벤트1
-        this._createEventOverlay(200, 30, 'rgba(255, 50, 50, 0.3)', '1px solid #aa0000');   // 이벤트2
-        this._createEventOverlay(90, 10, 'rgba(255, 255, 0, 0.3)', '1px solid #aaaa00');    // 경고1
-        this._createEventOverlay(190, 10, 'rgba(255, 255, 0, 0.3)', '1px solid #aaaa00');   // 경고2
+        this._createEventOverlay(50, 20, 'rgba(255, 50, 50, 0.3)', '1px solid #aa0000');   // 이벤트1
+        this._createEventOverlay(100, 20, 'rgba(255, 50, 50, 0.3)', '1px solid #aa0000');  // 이벤트2
+        this._createEventOverlay(40, 10, 'rgba(255, 255, 0, 0.3)', '1px solid #aaaa00');   // 경고1
+        this._createEventOverlay(90, 10, 'rgba(255, 255, 0, 0.3)', '1px solid #aaaa00');   // 경고2
 
         // 진행 바
         this.timeBar = document.createElement('div');
@@ -76,7 +76,7 @@ export class UIManager {
     }
 
     _createEventOverlay(startSec, durationSec, color, border) {
-        const totalTime = 300;
+        const totalTime = 150;
         const overlay = document.createElement('div');
         Object.assign(overlay.style, {
             position: 'absolute',
@@ -92,7 +92,7 @@ export class UIManager {
     }
 
     updateTimeBar(timeLeft) {
-        const totalTime = 300;
+        const totalTime = 150;
         const progress = ((totalTime - timeLeft) / totalTime) * 100;
         this.timeBar.style.width = `${progress}%`;
     }
@@ -102,36 +102,36 @@ export class UIManager {
     }
 
     updateHoverHunger3D(hunger, x, y) {
-    if (!this.hungerTooltip) {
-        this.hungerTooltip = document.createElement('div');
-        Object.assign(this.hungerTooltip.style, {
-            position: 'fixed',
-            padding: '6px 10px',
-            background: 'rgba(0,0,0,0.75)',
-            color: '#fff',
-            fontSize: '13px',
-            fontFamily: '"NeoDunggeunmo", sans-serif',
-            borderRadius: '6px',
-            pointerEvents: 'none',
-            zIndex: '1003',
-            whiteSpace: 'nowrap',
-            display: 'none',
-            boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
-            border: '1px solid #aaa',
-        });
-        document.body.appendChild(this.hungerTooltip);
-    }
+        if (!this.hungerTooltip) {
+            this.hungerTooltip = document.createElement('div');
+            Object.assign(this.hungerTooltip.style, {
+                position: 'fixed',
+                padding: '6px 10px',
+                background: 'rgba(0,0,0,0.75)',
+                color: '#fff',
+                fontSize: '13px',
+                fontFamily: '"NeoDunggeunmo", sans-serif',
+                borderRadius: '6px',
+                pointerEvents: 'none',
+                zIndex: '1003',
+                whiteSpace: 'nowrap',
+                display: 'none',
+                boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
+                border: '1px solid #aaa',
+            });
+            document.body.appendChild(this.hungerTooltip);
+        }
 
-    if (hunger === null) {
-        this.hungerTooltip.style.display = 'none';
-    } else {
-        const intHunger = Math.floor(hunger); // 정수화
-        this.hungerTooltip.textContent = `🍗 배고픔: ${intHunger}`;
-        this.hungerTooltip.style.left = `${x}px`;
-        this.hungerTooltip.style.top = `${y - 30}px`; // 닭 위 약간 띄움
-        this.hungerTooltip.style.display = 'block';
+        if (hunger === null) {
+            this.hungerTooltip.style.display = 'none';
+        } else {
+            const intHunger = Math.floor(hunger);
+            this.hungerTooltip.textContent = `🍗 배고픔: ${intHunger}`;
+            this.hungerTooltip.style.left = `${x}px`;
+            this.hungerTooltip.style.top = `${y - 30}px`;
+            this.hungerTooltip.style.display = 'block';
+        }
     }
-}
 
     showGameOver(chickenCount) {
         const gameOverText = document.createElement('div');
@@ -152,43 +152,43 @@ export class UIManager {
         });
         document.body.appendChild(gameOverText);
     }
+
     showWarningPopup(message) {
-    const popup = document.createElement('div');
-    popup.textContent = message;
-    Object.assign(popup.style, {
-        position: 'fixed',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        padding: '20px 30px',
-        background: 'rgba(255, 255, 0, 0.9)',
-        color: '#000',
-        fontSize: '24px',
-        fontWeight: 'bold',
-        fontFamily: '"NeoDunggeunmo", sans-serif',
-        borderRadius: '12px',
-        border: '2px solid #aaa',
-        zIndex: '2000',
-        opacity: '1',
-        transition: 'opacity 0.3s ease-in-out',
-        boxShadow: '0 0 12px rgba(255, 255, 0, 0.7)',
-        pointerEvents: 'none',
-    });
+        const popup = document.createElement('div');
+        popup.textContent = message;
+        Object.assign(popup.style, {
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            padding: '20px 30px',
+            background: 'rgba(255, 255, 0, 0.9)',
+            color: '#000',
+            fontSize: '24px',
+            fontWeight: 'bold',
+            fontFamily: '"NeoDunggeunmo", sans-serif',
+            borderRadius: '12px',
+            border: '2px solid #aaa',
+            zIndex: '2000',
+            opacity: '1',
+            transition: 'opacity 0.3s ease-in-out',
+            boxShadow: '0 0 12px rgba(255, 255, 0, 0.7)',
+            pointerEvents: 'none',
+        });
 
-    document.body.appendChild(popup);
+        document.body.appendChild(popup);
 
-    let blinkCount = 0;
-    const maxBlinks = 5;
+        let blinkCount = 0;
+        const maxBlinks = 5;
 
-    const blinkInterval = setInterval(() => {
-        popup.style.opacity = popup.style.opacity === '1' ? '0' : '1';
-        blinkCount++;
-        if (blinkCount >= maxBlinks * 2) { // on/off 총 6번 (3초)
-            clearInterval(blinkInterval);
-            document.body.removeChild(popup);
-        }
-    }, 500); // 0.5초마다 토글 → 1초 주기로 깜빡임
+        const blinkInterval = setInterval(() => {
+            popup.style.opacity = popup.style.opacity === '1' ? '0' : '1';
+            blinkCount++;
+            if (blinkCount >= maxBlinks * 2) {
+                clearInterval(blinkInterval);
+                document.body.removeChild(popup);
+            }
+        }, 500);
+    }
 }
 
-
-}

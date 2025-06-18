@@ -16,7 +16,7 @@ let gameOver = false;
 let warnedTimes = new Set(); 
 
 const PLANE_SIZE = 10;
-const TOTAL_TIME = 300;
+const TOTAL_TIME = 150;
 
 init();
 animate();
@@ -127,8 +127,11 @@ function init() {
       game.eggs = game.eggs.filter(e => e !== hoveredEgg);
     }
 
-    if (hoveredChicken && resourceManager.spend(5)) {
+    if (!hoveredChicken.isSick && resourceManager.spend(5)) {
       hoveredChicken.feed();
+    }
+    else if (hoveredChicken.isSick && resourceManager.spend(15)) {
+      hoveredChicken.cure();
     }
   });
 
@@ -153,7 +156,7 @@ function animate() {
   uiManager.updateMoney(resourceManager.getMoney());
 
     //  경고 팝업 표시 로직
-  const warningTriggers = [210, 110];
+  const warningTriggers = [110, 60];
   for (let t of warningTriggers) {
     if (timeLeft === t && !warnedTimes.has(t)) {
       warnedTimes.add(t);
@@ -192,6 +195,9 @@ function handleGameOver() {
   console.log('💀 Game Over!');
   uiManager.showGameOver(game.chickens.length);
 }
+
+
+
 
 
 

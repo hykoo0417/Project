@@ -38,16 +38,14 @@ export class UIManager {
         document.body.appendChild(this.timeBarContainer);
 
         // 🎯 이벤트 및 경고 오버레이
-        this._createEventOverlay(50, 20, 'rgba(255, 50, 50, 0.3)', '1px solid #aa0000');   // 이벤트1
-        this._createEventOverlay(100, 20, 'rgba(255, 50, 50, 0.3)', '1px solid #aa0000');  // 이벤트2
-        this._createEventOverlay(40, 10, 'rgba(255, 255, 0, 0.3)', '1px solid #aaaa00');   // 경고1
-        this._createEventOverlay(90, 10, 'rgba(255, 255, 0, 0.3)', '1px solid #aaaa00');   // 경고2
+        this._createEventOverlay(30, 15, 'rgba(255, 50, 50, 0.3)', '1px solid #aa0000');   // 이벤트
+        this._createEventOverlay(25, 5, 'rgba(255, 255, 0, 0.3)', '1px solid #aaaa00');    // 경고
 
         // 진행 바
         this.timeBar = document.createElement('div');
         Object.assign(this.timeBar.style, {
             height: '100%',
-            width: '0%',
+            width: '0.1%',  // 초기에도 보이도록 최소 너비
             background: 'linear-gradient(90deg, #00ff88, #00ccff)',
             position: 'absolute',
             left: '0',
@@ -76,7 +74,7 @@ export class UIManager {
     }
 
     _createEventOverlay(startSec, durationSec, color, border) {
-        const totalTime = 150;
+        const totalTime = 60;
         const overlay = document.createElement('div');
         Object.assign(overlay.style, {
             position: 'absolute',
@@ -92,7 +90,7 @@ export class UIManager {
     }
 
     updateTimeBar(timeLeft) {
-        const totalTime = 150;
+        const totalTime = 60;
         const progress = ((totalTime - timeLeft) / totalTime) * 100;
         this.timeBar.style.width = `${progress}%`;
     }
@@ -102,26 +100,7 @@ export class UIManager {
     }
 
     updateHoverHunger3D(hunger, x, y) {
-        if (!this.hungerTooltip) {
-            this.hungerTooltip = document.createElement('div');
-            Object.assign(this.hungerTooltip.style, {
-                position: 'fixed',
-                padding: '6px 10px',
-                background: 'rgba(0,0,0,0.75)',
-                color: '#fff',
-                fontSize: '13px',
-                fontFamily: '"NeoDunggeunmo", sans-serif',
-                borderRadius: '6px',
-                pointerEvents: 'none',
-                zIndex: '1003',
-                whiteSpace: 'nowrap',
-                display: 'none',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.5)',
-                border: '1px solid #aaa',
-            });
-            document.body.appendChild(this.hungerTooltip);
-        }
-
+        if (!this.hungerTooltip) return;
         if (hunger === null) {
             this.hungerTooltip.style.display = 'none';
         } else {
@@ -133,24 +112,28 @@ export class UIManager {
         }
     }
 
-    showGameOver(chickenCount) {
-        const gameOverText = document.createElement('div');
-        gameOverText.textContent = `💀 게임 종료! 닭 ${chickenCount}마리 보유`;
-        Object.assign(gameOverText.style, {
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            padding: '20px',
-            fontSize: '24px',
-            color: '#fff',
-            fontFamily: '"NeoDunggeunmo", sans-serif',
-            background: 'rgba(0,0,0,0.8)',
-            borderRadius: '12px',
-            border: '2px solid #fff',
-            zIndex: '1003',
-        });
-        document.body.appendChild(gameOverText);
+    showimagePopup(imageSrc, message) {
+        const popup = document.createElement('div');
+        popup.style.position = 'fixed';
+        popup.style.top = '20%';
+        popup.style.left = '50%';
+        popup.style.transform = 'translateX(-50%)';
+        popup.style.background = '#fff8dc';
+        popup.style.border = '2px solid #ff9900';
+        popup.style.padding = '20px';
+        popup.style.borderRadius = '12px';
+        popup.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+        popup.style.zIndex = '1000';
+        popup.style.maxWidth = '400px';
+        popup.style.textAlign = 'center';
+        popup.innerHTML = `
+            <img src="${imageSrc}" alt="경고 이미지" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <div style="font-size: 18px; font-weight: bold;">${message}</div>
+        `;
+        document.body.appendChild(popup);
+        setTimeout(() => {
+            popup.remove();
+        }, 4000);
     }
 
     showWarningPopup(message) {
@@ -170,25 +153,17 @@ export class UIManager {
             borderRadius: '12px',
             border: '2px solid #aaa',
             zIndex: '2000',
-            opacity: '1',
-            transition: 'opacity 0.3s ease-in-out',
             boxShadow: '0 0 12px rgba(255, 255, 0, 0.7)',
             pointerEvents: 'none',
         });
-
         document.body.appendChild(popup);
+        setTimeout(() => {
+            popup.remove();
+        }, 5000);
+    }
 
-        let blinkCount = 0;
-        const maxBlinks = 5;
-
-        const blinkInterval = setInterval(() => {
-            popup.style.opacity = popup.style.opacity === '1' ? '0' : '1';
-            blinkCount++;
-            if (blinkCount >= maxBlinks * 2) {
-                clearInterval(blinkInterval);
-                document.body.removeChild(popup);
-            }
-        }, 500);
+    showGameOver(chickenCount) {
+        this.showimagePopup('assets/gameover.png', `💀 게임 종료! 닭 ${chickenCount}마리 보유`);
     }
 }
 

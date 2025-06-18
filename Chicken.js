@@ -124,7 +124,10 @@ export class Chicken {
     // 알 낳기
     if (Date.now() > this.nextEggTime && !this.isSick) {
       this.nextEggTime = Date.now() + this._randomEggDelay();
-      return 'layEgg'; // GameManager에서 처리
+      const chance = 0.5 + this.hunger / 200;
+      if(Math.random() < chance){
+        return 'layEgg';
+      }
     }
   }
 

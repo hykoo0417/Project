@@ -131,9 +131,43 @@ export class UIManager {
         this.hungerTooltip.style.top = `${y - 30}px`; // 닭 위 약간 띄움
         this.hungerTooltip.style.display = 'block';
     }
-}
+    }
+
+    showimagePopup(imageSrc, message) {
+    // 팝업 컨테이너 만들기
+        const popup = document.createElement('div');
+        popup.style.position = 'fixed';
+        popup.style.top = '20%';
+        popup.style.left = '50%';
+        popup.style.transform = 'translateX(-50%)';
+        popup.style.background = '#fff8dc';
+        popup.style.border = '2px solid #ff9900';
+        popup.style.padding = '20px';
+        popup.style.borderRadius = '12px';
+        popup.style.boxShadow = '0 5px 15px rgba(0,0,0,0.3)';
+        popup.style.zIndex = '1000';
+        popup.style.maxWidth = '400px';
+        popup.style.textAlign = 'center';
+
+        // 이미지와 텍스트 추가
+        popup.innerHTML = `
+            <img src="${imageSrc}" alt="경고 이미지" style="width: 100%; border-radius: 8px; margin-bottom: 10px;">
+            <div style="font-size: 18px; font-weight: bold;">${message}</div>
+        `;
+
+        document.body.appendChild(popup);
+
+        // 자동 제거
+        setTimeout(() => {
+            popup.remove();
+        }, 4000);
+    }
 
     showGameOver(chickenCount) {
+        this.showimagePopup('assets/gameover.png', `💀 게임 종료! 닭 ${chickenCount}마리 보유`);
+
+
+        /*
         const gameOverText = document.createElement('div');
         gameOverText.textContent = `💀 게임 종료! 닭 ${chickenCount}마리 보유`;
         Object.assign(gameOverText.style, {
@@ -151,6 +185,9 @@ export class UIManager {
             zIndex: '1003',
         });
         document.body.appendChild(gameOverText);
+        */
+
+
     }
     showWarningPopup(message) {
     const popup = document.createElement('div');

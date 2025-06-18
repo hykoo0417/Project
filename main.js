@@ -160,11 +160,9 @@ function animate() {
   for (let t of warningTriggers) {
     if (timeLeft === t && !warnedTimes.has(t)) {
       warnedTimes.add(t);
-      uiManager.showWarningPopup('⚠️ 경고! 이벤트가 곧 시작됩니다!');
+      uiManager.showimagePopup('assets/disease.png', '⚠️조류독감 경고! 백신으로 예방하세요');
     }
   }
-
-
 
   if (timeLeft <= 0) {
     handleGameOver();
@@ -195,7 +193,6 @@ function handleGameOver() {
   console.log('💀 Game Over!');
   uiManager.showGameOver(game.chickens.length);
 }
-
 
 
 

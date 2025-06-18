@@ -16,7 +16,7 @@ let gameOver = false;
 let warnedTimes = new Set(); 
 
 const PLANE_SIZE = 10;
-const TOTAL_TIME = 150;
+const TOTAL_TIME =60;
 
 init();
 animate();
@@ -156,7 +156,7 @@ function animate() {
   uiManager.updateMoney(resourceManager.getMoney());
 
     //  경고 팝업 표시 로직
-  const warningTriggers = [210, 110];
+  const warningTriggers = [35];
   for (let t of warningTriggers) {
     if (timeLeft === t && !warnedTimes.has(t)) {
       warnedTimes.add(t);

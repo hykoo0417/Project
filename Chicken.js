@@ -24,6 +24,7 @@ export class Chicken {
     this.isSick = false;
     this.sicknessTimer = 0;
     this.isCritical = false;
+    this.grayFactor = 0.0;
     
     this._loadModel(startPosition);
   }
@@ -54,6 +55,7 @@ export class Chicken {
         child.material = child.material.map(mat => mat.clone());
 
         const grayFactor = 0.3 + Math.random() * 0.7;
+        this.grayFactor = grayFactor;
         child.material[0].color.setRGB(grayFactor, grayFactor, grayFactor);
       }
     });
@@ -179,11 +181,8 @@ export class Chicken {
   }
 
   die() {
-    //this.alive = false;
-    //this.mesh.material.color.set(0x444444);
-    if (!this.alive || !this.mesh) return;
 
-    //this.alive = false;
+    if (!this.alive || !this.mesh) return;
 
     const duration = 1.0; // 1초
     const startTime = performance.now();
@@ -239,7 +238,17 @@ export class Chicken {
     this.sicknessTimer = 0;
     this.mesh.traverse((child) => {
         if (child.isMesh){
-          child.material[0].color.set(0xffffff);
+          const material = child.material[0];
+          material.color.set(0xffffff);
+          material.color.setRGB(this.grayFactor, this.grayFactor, this.grayFactor);
+
+          material.emissive = new THREE.Color(0x66ff66);
+          material.emissiveIntensity = 0.2;
+
+          setTimeout(() => {
+            material.emissive.set(0x000000);
+            material.emissiveIntensity = 0;
+          }, 300);
         }
     });
   }

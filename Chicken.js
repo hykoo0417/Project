@@ -52,6 +52,9 @@ export class Chicken {
         child.castShadow = true;      // 그림자 내도록 설정
         child.receiveShadow = true;   // 혹시 그림자 받을 부분이 있으면
         child.material = child.material.map(mat => mat.clone());
+
+        const grayFactor = 0.3 + Math.random() * 0.7;
+        child.material[0].color.setRGB(grayFactor, grayFactor, grayFactor);
       }
     });
 
@@ -79,6 +82,7 @@ export class Chicken {
 
     // 배고픔 감소
     this.hunger -= deltaTime * 5;
+    
     if (this.hunger <= 0) { // 배고픔 0되면 죽음
       this.die();
       return;
@@ -175,8 +179,41 @@ export class Chicken {
   }
 
   die() {
-    this.alive = false;
-    this.mesh.material.color.set(0x444444);
+    //this.alive = false;
+    //this.mesh.material.color.set(0x444444);
+    if (!this.alive || !this.mesh) return;
+
+    //this.alive = false;
+
+    const duration = 1.0; // 1초
+    const startTime = performance.now();
+    const startRotation = this.mesh.rotation.x;
+    const targetRotation = startRotation + Math.PI / 2;
+    const rotateX = Math.random() < 0.5;
+
+    const animateRotation = (now) => {
+      const elapsed = (now - startTime) / 500; // 초 단위
+      const t = Math.min(elapsed / duration, 1); // 진행 비율 (0~1)
+
+      const angle = startRotation + (targetRotation - startRotation) * t;
+
+      this.mesh.rotation.x = angle;
+      
+      if (rotateX) {
+        this.mesh.rotation.x = angle;
+      } else {
+        this.mesh.rotation.z = angle;
+      }
+
+      if (t < 1) {
+        requestAnimationFrame(animateRotation);
+      } else {
+        this.scene.remove(this.mesh);
+        this.alive = false;
+      }
+    };
+
+    requestAnimationFrame(animateRotation);
   }
 
   dispose() {
@@ -218,4 +255,3 @@ export class Chicken {
     position.z = Math.max(-half, Math.min(half, position.z));
   }
 }
-

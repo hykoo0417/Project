@@ -165,29 +165,6 @@ export class UIManager {
 
     showGameOver(chickenCount) {
         this.showimagePopup('assets/gameover.png', `💀 게임 종료! 닭 ${chickenCount}마리 보유`);
-
-
-        /*
-        const gameOverText = document.createElement('div');
-        gameOverText.textContent = `💀 게임 종료! 닭 ${chickenCount}마리 보유`;
-        Object.assign(gameOverText.style, {
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            padding: '20px',
-            fontSize: '24px',
-            color: '#fff',
-            fontFamily: '"NeoDunggeunmo", sans-serif',
-            background: 'rgba(0,0,0,0.8)',
-            borderRadius: '12px',
-            border: '2px solid #fff',
-            zIndex: '1003',
-        });
-        document.body.appendChild(gameOverText);
-        */
-
-
     }
     showWarningPopup(message) {
     const popup = document.createElement('div');

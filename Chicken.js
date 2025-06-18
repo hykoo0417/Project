@@ -11,9 +11,9 @@ export class Chicken {
     this.scene = scene;
     this.mesh = null; // 모델 로딩될때 할당됨
 
-    this.hunger = 100;          // 0~100
+    this.hunger = 50;          // 0~100
     this.alive = true;
-    this.moveSpeed = 0.5;       // units per second
+    this.moveSpeed = 0.7;       // units per second
     this.direction = this.getRandomDirection();
     this.targetDirection = this.direction.clone();
 
@@ -71,7 +71,7 @@ export class Chicken {
   }
 
   _randomEggDelay() {
-    return 5000 + Math.random() * 5000; // 5~10초 후 알 낳기
+    return 2000 + Math.random() * 3000; // 5~10초 후 알 낳기
   }
 
   update(deltaTime, planeSize, neighbors) {
@@ -79,6 +79,7 @@ export class Chicken {
 
     // 배고픔 감소
     this.hunger -= deltaTime * 5;
+    
     if (this.hunger <= 0) { // 배고픔 0되면 죽음
       this.die();
       return;
@@ -172,8 +173,42 @@ export class Chicken {
   }
 
   die() {
-    this.alive = false;
-    this.mesh.material.color.set(0x444444);
+    //this.alive = false;
+    //this.mesh.material.color.set(0x444444);
+    if (!this.alive || !this.mesh) return;
+
+    //this.alive = false;
+
+    const duration = 1.0; // 1초
+    const startTime = performance.now();
+    const startRotation = this.mesh.rotation.x;
+    const targetRotation = startRotation + Math.PI / 2;
+    const rotateX = Math.random() < 0.5;
+
+    const animateRotation = (now) => {
+      const elapsed = (now - startTime) / 500; // 초 단위
+      const t = Math.min(elapsed / duration, 1); // 진행 비율 (0~1)
+
+      // 선형 보간
+      //this.mesh.rotation.x = startRotation + (targetRotation - startRotation) * t;
+
+      const angle = startRotation + (targetRotation - startRotation) * t;
+
+      if (rotateX) {
+        this.mesh.rotation.x = angle;
+      } else {
+        this.mesh.rotation.z = angle;
+      }
+
+      if (t < 1) {
+        requestAnimationFrame(animateRotation);
+      } else {
+        this.scene.remove(this.mesh);
+        this.alive = false;
+      }
+    };
+
+    requestAnimationFrame(animateRotation);
   }
 
   dispose() {

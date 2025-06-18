@@ -146,7 +146,7 @@ function animate() {
   if (gameOver) return;
   requestAnimationFrame(animate);
 
-  const deltaTime = clock.getDelta() * 20;
+  const deltaTime = clock.getDelta() * 1;
   resourceManager.update(deltaTime);
 
   const timeLeft = resourceManager.getTime();
